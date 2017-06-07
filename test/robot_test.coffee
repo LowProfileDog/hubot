@@ -14,10 +14,14 @@ ScopedHttpClient = require 'scoped-http-client'
 
 # mock `hubot-mock-adapter` module from fixture
 mockery = require 'mockery'
-mockery.registerMock 'hubot-mock-adapter', require('./fixtures/mock-adapter')
 
 describe 'Robot', ->
   beforeEach ->
+    mockery.enable({
+      warnOnReplace: false,
+      warnOnUnregistered: false
+    })
+    mockery.registerMock 'hubot-mock-adapter', require('./fixtures/mock-adapter')
     @robot = new Robot null, 'mock-adapter', yes, 'TestHubot'
     @robot.alias = 'Hubot'
     @robot.run
@@ -35,7 +39,8 @@ describe 'Robot', ->
     }
 
   afterEach ->
-   @robot.shutdown()
+    mockery.disable()
+    @robot.shutdown()
 
   describe 'Unit Tests', ->
     describe '#http', ->

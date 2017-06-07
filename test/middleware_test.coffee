@@ -14,7 +14,6 @@ Middleware = require '../src/middleware'
 
 # mock `hubot-mock-adapter` module from fixture
 mockery = require 'mockery'
-mockery.registerMock 'hubot-mock-adapter', require('./fixtures/mock-adapter')
 
 describe 'Middleware', ->
   describe 'Unit Tests', ->
@@ -300,6 +299,11 @@ describe 'Middleware', ->
   # tested for.
   describe 'Public Middleware APIs', ->
     beforeEach ->
+      mockery.enable({
+        warnOnReplace: false,
+        warnOnUnregistered: false
+      })
+      mockery.registerMock 'hubot-mock-adapter', require('./fixtures/mock-adapter')
       @robot = new Robot null, 'mock-adapter', yes, 'TestHubot'
       @robot.run
 
@@ -323,6 +327,7 @@ describe 'Middleware', ->
       @testListener = @robot.listeners[0]
 
     afterEach ->
+      mockery.disable()
       @robot.shutdown()
 
     describe 'listener middleware context', ->
